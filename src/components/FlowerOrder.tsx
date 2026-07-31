@@ -7,7 +7,7 @@ import { useHaptics } from "@/lib/haptics";
 export function FlowerOrder() {
   const haptics = useHaptics();
   const [selected, setSelected] = useState<FlowerId | null>(null);
-  const [note, setNote] = useState("");
+  const [address, setAddress] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "ok" | "error">(
     "idle",
   );
@@ -20,23 +20,62 @@ export function FlowerOrder() {
       setError("Выбери букет");
       return;
     }
+    if (!address.trim()) {
+      haptics.error();
+      setError("Напиши адрес доставки");
+      return;
+    }
+
+    const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY?.trim();
+    if (!accessKey) {
+      haptics.error();
+      setError("Заказы не настроены: нет NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY");
+      setStatus("error");
+      return;
+    }
+
+    const bouquetName =
+      FLOWER_OPTIONS.find((f) => f.id === selected)?.name ?? selected;
+
     setStatus("loading");
     setError("");
+
     try {
-      const res = await fetch("/api/order", {
+      // Web3Forms free: только с клиента (с сервера Vercel часто блокирует)
+      const res = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
         body: JSON.stringify({
-          bouquet: selected,
-          bouquetName:
-            FLOWER_OPTIONS.find((f) => f.id === selected)?.name ?? selected,
-          note,
+          access_key: accessKey,
+          subject: `Заказ цветов: ${bouquetName}`,
+          from_name: "Лина",
+          name: "Лина",
+          email: "lina-order@mail.com",
+          message: `Букет: ${bouquetName}\nАдрес доставки: ${address.trim()}`,
         }),
       });
-      const data = (await res.json()) as { ok?: boolean; error?: string };
-      if (!res.ok || !data.ok) {
-        throw new Error(data.error || "Не удалось отправить заказ");
+
+      const raw = await res.text();
+      let data: { success?: boolean; message?: string } = {};
+      try {
+        data = JSON.parse(raw) as { success?: boolean; message?: string };
+      } catch {
+        throw new Error("Сервис писем ответил странно. Попробуй ещё раз.");
       }
+
+      if (!res.ok || !data.success) {
+        const msg = data.message || "Не удалось отправить заказ";
+        if (/access[_ ]?key|pattern|match/i.test(msg)) {
+          throw new Error(
+            "Неверный ключ Web3Forms. Нужен UUID с web3forms.com (не [SENSITIVE]).",
+          );
+        }
+        throw new Error(msg);
+      }
+
       haptics.success();
       setStatus("ok");
     } catch (err) {
@@ -83,10 +122,11 @@ export function FlowerOrder() {
         <label className="field">
           <span>Адрес доставки</span>
           <textarea
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
             rows={3}
             placeholder="Улица, дом, квартира, подъезд…"
+            autoComplete="street-address"
           />
         </label>
         {error ? <p className="error">{error}</p> : null}
