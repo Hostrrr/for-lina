@@ -4,14 +4,19 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ProgressBar } from "./ProgressBar";
 import { useHaptics } from "@/lib/haptics";
 
-/** Фотки духов: public/perfumes/1.jpg … 6.jpg */
+/** Фотки духов: public/perfumes/1.png … */
 export const PERFUME_SRCS = [
-  "/perfumes/1.jpg",
-  "/perfumes/2.jpg",
-  "/perfumes/3.jpg",
-  "/perfumes/4.jpg",
-  "/perfumes/5.jpg",
-  "/perfumes/6.jpg",
+  "/perfumes/1.png",
+  "/perfumes/2.png",
+  "/perfumes/3.png",
+  "/perfumes/4.png",
+  "/perfumes/5.png",
+  "/perfumes/6.png",
+  "/perfumes/7.png",
+  "/perfumes/8.png",
+  "/perfumes/9.png",
+  "/perfumes/10.png",
+  "/perfumes/11.png",
 ] as const;
 
 type Item = {
