@@ -122,6 +122,162 @@ textarea {
   text-shadow: none;
 }
 
+.hero-title-line {
+  font-size: clamp(2.4rem, 10vw, 3.8rem);
+  line-height: 1.05;
+  max-width: 12ch;
+}
+
+.miss-title {
+  text-align: center;
+  background: linear-gradient(120deg, #7e22ce, #c084fc, #9333ea);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 4s ease infinite;
+}
+
+@keyframes shimmer {
+  0%,
+  100% {
+    background-position: 0% center;
+  }
+  50% {
+    background-position: 100% center;
+  }
+}
+
+.field-hint {
+  font-style: normal;
+  font-weight: 500;
+  color: var(--muted);
+  font-size: 0.85em;
+}
+
+.order-success {
+  min-height: min(70dvh, 520px);
+  display: grid;
+  place-items: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.success-glow {
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(192, 132, 252, 0.45) 0%,
+    rgba(147, 51, 234, 0.12) 45%,
+    transparent 70%
+  );
+  animation: pulseGlow 2.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes pulseGlow {
+  0%,
+  100% {
+    transform: scale(0.9);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+}
+
+.success-card {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 12px;
+  place-items: center;
+  padding: 28px 20px;
+  animation: successIn 0.8s cubic-bezier(0.18, 1.4, 0.4, 1) both;
+}
+
+@keyframes successIn {
+  from {
+    opacity: 0;
+    transform: scale(0.7) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.success-burst {
+  display: flex;
+  gap: 18px;
+  font-size: 1.4rem;
+  color: var(--accent);
+  animation: floatBurst 2.4s ease-in-out infinite;
+}
+
+.success-burst span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.success-burst span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes floatBurst {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.success-title {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(2.4rem, 10vw, 3.4rem);
+  font-weight: 700;
+  line-height: 1.05;
+  background: linear-gradient(135deg, #6b21a8 0%, #a855f7 50%, #7c3aed 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 3.5s ease infinite;
+}
+
+.success-lede {
+  color: var(--muted);
+  font-size: 1.1rem;
+}
+
+.success-heart {
+  font-size: 2rem;
+  color: #c084fc;
+  animation: heartBeat 1.2s ease-in-out infinite;
+}
+
+@keyframes heartBeat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.18);
+  }
+  40% {
+    transform: scale(0.96);
+  }
+  60% {
+    transform: scale(1.12);
+  }
+}
+
 .screen-title {
   font-family: var(--font-display), Georgia, serif;
   font-size: clamp(1.75rem, 6vw, 2.4rem);
@@ -699,6 +855,19 @@ textarea {
 
   .hero-title {
     font-size: clamp(3.2rem, 20vw, 4.4rem);
+  }
+
+  .hero-title-line {
+    font-size: clamp(2.1rem, 9vw, 3rem);
+  }
+
+  .screen.intro {
+    text-align: center;
+    align-items: center;
+  }
+
+  .miss-title {
+    font-size: 1.5rem;
   }
 
   .screen-title {

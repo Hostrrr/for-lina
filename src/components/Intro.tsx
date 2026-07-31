@@ -11,11 +11,11 @@ export function Intro({ onStart }: Props) {
 
   return (
     <section className="screen intro fade-in">
-      <p className="brand">Для Лины</p>
-      <h1 className="hero-title">Лина</h1>
-      <p className="lede intro-lede">
-        Прости. 3 игры → цветы.
-      </p>
+      <h1 className="hero-title hero-title-line">
+        Лина, пройди
+        <br />
+        пожалуйста
+      </h1>
       <button
         type="button"
         className="btn primary"

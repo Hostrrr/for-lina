@@ -13,18 +13,18 @@ export function Reveal({ onContinue }: Props) {
 
   useEffect(() => {
     haptics.buzz();
-    // once on mount
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <section className="screen reveal fade-in">
+      <h2 className="screen-title miss-title">Я очень скучаю</h2>
       <div className="reveal-frame pop-in">
         {imgOk ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src="/finale.jpg"
-            alt="Для Лины"
+            alt="Лина"
             className="reveal-img"
             onError={() => setImgOk(false)}
           />

@@ -4,7 +4,6 @@ import { FormEvent, useState } from "react";
 import { FLOWER_OPTIONS, type FlowerId } from "@/lib/flowers";
 import { useHaptics } from "@/lib/haptics";
 
-/** Сюда приходят заказы */
 const ORDER_EMAIL =
   process.env.NEXT_PUBLIC_ORDER_EMAIL?.trim() || "hosta20259@gmail.com";
 
@@ -38,7 +37,6 @@ export function FlowerOrder() {
     setError("");
 
     try {
-      // FormSubmit шлёт письмо на почту (первый раз — письмо с активацией)
       const res = await fetch(
         `https://formsubmit.co/ajax/${encodeURIComponent(ORDER_EMAIL)}`,
         {
@@ -73,10 +71,7 @@ export function FlowerOrder() {
         /success|отправ|sent|thank/i.test(JSON.stringify(data));
 
       if (!res.ok || !ok) {
-        throw new Error(
-          data.message ||
-            "Не удалось отправить. Если это первый раз — подтверди почту в письме от FormSubmit.",
-        );
+        throw new Error(data.message || "Не удалось отправить заказ");
       }
 
       haptics.success();
@@ -90,13 +85,20 @@ export function FlowerOrder() {
 
   if (status === "ok") {
     return (
-      <section className="screen order fade-in">
-        <h2 className="screen-title">Заказ улетел ✨</h2>
-        <p className="lede">
-          Если это первый заказ — загляни в Gmail (и Спам): там может быть
-          письмо FormSubmit «Activate Form», его нужно подтвердить. Потом
-          заказы будут приходить нормально.
-        </p>
+      <section className="screen order-success fade-in">
+        <div className="success-glow" aria-hidden />
+        <div className="success-card">
+          <div className="success-burst" aria-hidden>
+            <span>✦</span>
+            <span>❀</span>
+            <span>✦</span>
+          </div>
+          <h2 className="success-title">Заказ улетел</h2>
+          <p className="success-lede">Скоро будут цветы.</p>
+          <p className="success-heart" aria-hidden>
+            ♡
+          </p>
+        </div>
       </section>
     );
   }
@@ -127,7 +129,10 @@ export function FlowerOrder() {
           ))}
         </div>
         <label className="field">
-          <span>Адрес доставки</span>
+          <span>
+            Адрес доставки{" "}
+            <em className="field-hint">(я его не узнаю, всё автоматически)</em>
+          </span>
           <textarea
             value={address}
             onChange={(e) => setAddress(e.target.value)}
