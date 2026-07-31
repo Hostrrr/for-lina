@@ -282,20 +282,20 @@ textarea {
 .catch-item {
   position: absolute;
   transform: translate(-50%, -50%);
-  width: calc(var(--hit) * 0.9);
-  height: calc(var(--hit) * 1.35);
-  min-width: calc(var(--hit) * 0.9);
-  min-height: calc(var(--hit) * 1.35);
+  width: calc(var(--hit) * 0.95);
+  height: calc(var(--hit) * 1.7);
+  min-width: calc(var(--hit) * 0.95);
+  min-height: calc(var(--hit) * 1.7);
   display: grid;
   place-items: center;
   border: none;
-  border-radius: 18px;
-  padding: 6px;
+  border-radius: 16px;
+  padding: 10px 12px;
   overflow: hidden;
-  background: rgba(244, 238, 252, 0.92);
+  background: #07060b;
   box-shadow:
-    inset 0 0 0 2px rgba(192, 132, 252, 0.45),
-    0 8px 18px rgba(0, 0, 0, 0.35);
+    inset 0 0 0 2px rgba(192, 132, 252, 0.5),
+    0 8px 18px rgba(0, 0, 0, 0.4);
   font-size: 2.1rem;
   line-height: 1;
   cursor: pointer;
@@ -308,8 +308,10 @@ textarea {
 .catch-img {
   width: 100%;
   height: 100%;
+  max-width: 100%;
+  max-height: 100%;
   object-fit: contain;
-  object-position: center;
+  object-position: center center;
   display: block;
   pointer-events: none;
 }
@@ -355,7 +357,8 @@ textarea {
   cursor: pointer;
   background: linear-gradient(145deg, #3b1d6e, #1e1038);
   box-shadow: inset 0 0 0 1px rgba(192, 132, 252, 0.25);
-  perspective: 600px;
+  perspective: 800px;
+  transform-style: preserve-3d;
   overflow: hidden;
   touch-action: manipulation;
   min-height: 64px;
@@ -366,9 +369,12 @@ textarea {
   inset: 0;
   display: grid;
   place-items: center;
+  place-content: center;
   font-size: 1.7rem;
   backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
   transition: transform 0.35s ease;
+  transform-style: preserve-3d;
 }
 
 .memory-face.front {
@@ -378,19 +384,22 @@ textarea {
 
 .memory-face.back {
   transform: rotateY(180deg);
-  background: #f4eefc;
+  background: #0a0810;
   overflow: hidden;
-  padding: 5px;
+  padding: 8px;
 }
 
 .memory-img {
   width: 100%;
   height: 100%;
+  max-width: 100%;
+  max-height: 100%;
   object-fit: contain;
-  object-position: center;
+  object-position: center center;
   display: block;
+  margin: auto;
   pointer-events: none;
-  border-radius: 8px;
+  border-radius: 6px;
 }
 
 .memory-emoji {
