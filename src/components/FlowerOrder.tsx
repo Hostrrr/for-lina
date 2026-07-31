@@ -50,11 +50,15 @@ export function FlowerOrder() {
         },
         body: JSON.stringify({
           access_key: accessKey,
-          subject: `Заказ цветов: ${bouquetName}`,
+          subject: `Заказ цветов: ${bouquetName} — ${address.trim()}`,
           from_name: "Лина",
           name: "Лина",
-          email: "lina-order@mail.com",
-          message: `Букет: ${bouquetName}\nАдрес доставки: ${address.trim()}`,
+          email: "hosta20259@gmail.com",
+          // отдельные поля — так адрес виден колонкой в дашборде
+          bouquet: bouquetName,
+          address: address.trim(),
+          // адрес первой строкой: в таблице Message часто видно только начало
+          message: `Адрес: ${address.trim()}\nБукет: ${bouquetName}`,
         }),
       });
 
