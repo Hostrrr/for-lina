@@ -52,7 +52,7 @@ export async function POST(request: Request) {
   const message = [
     `Заказ цветов от Лины`,
     `Букет: ${bouquetName}`,
-    `Адрес / комментарий: ${note || "—"}`,
+    `Адрес доставки: ${note || "не указан"}`,
   ].join("\n");
 
   const res = await fetch("https://api.web3forms.com/submit", {

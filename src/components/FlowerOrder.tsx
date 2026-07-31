@@ -81,12 +81,12 @@ export function FlowerOrder() {
           ))}
         </div>
         <label className="field">
-          <span>Комментарий</span>
+          <span>Адрес доставки</span>
           <textarea
             value={note}
             onChange={(e) => setNote(e.target.value)}
-            rows={2}
-            placeholder="Адрес, пожелания…"
+            rows={3}
+            placeholder="Улица, дом, квартира, подъезд…"
           />
         </label>
         {error ? <p className="error">{error}</p> : null}
