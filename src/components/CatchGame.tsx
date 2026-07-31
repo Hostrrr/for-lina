@@ -6,7 +6,7 @@ import { useHaptics } from "@/lib/haptics";
 
 type Item = {
   id: number;
-  kind: "star" | "flower";
+  kind: "ghost" | "spark";
   x: number;
   y: number;
   speed: number;
@@ -14,7 +14,7 @@ type Item = {
 
 const DURATION = 20;
 const TARGET = 12;
-const EMOJIS = { star: "⭐", flower: "🌸" };
+const EMOJIS = { ghost: "👻", spark: "✨" };
 
 type Props = {
   onWin: () => void;
@@ -72,7 +72,7 @@ export function CatchGame({ onWin }: Props) {
   useEffect(() => {
     if (!running) return;
     const spawn = window.setInterval(() => {
-      const kind = Math.random() > 0.45 ? "flower" : "star";
+      const kind = Math.random() > 0.45 ? "ghost" : "spark";
       idRef.current += 1;
       setItems((prev) => [
         ...prev.slice(-12),
@@ -122,7 +122,7 @@ export function CatchGame({ onWin }: Props) {
       <div className="game-top">
         <ProgressBar step={1} />
         <div className="hud">
-          <span className="game-name">Звёзды и цветы</span>
+          <span className="game-name">Поймай духи</span>
           <span>⏱ {timeLeft}с</span>
           <span>
             ✦ {score}/{TARGET}
@@ -140,7 +140,7 @@ export function CatchGame({ onWin }: Props) {
               e.preventDefault();
               catchItem(it.id);
             }}
-            aria-label={it.kind === "star" ? "звезда" : "цветок"}
+            aria-label={it.kind === "ghost" ? "дух" : "искорка"}
           >
             {EMOJIS[it.kind]}
           </button>

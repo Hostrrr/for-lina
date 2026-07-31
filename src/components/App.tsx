@@ -8,9 +8,11 @@ import { Intro } from "./Intro";
 import { MemoryGame } from "./MemoryGame";
 import { Reveal } from "./Reveal";
 import { useProgress } from "@/lib/useProgress";
+import { useHaptics } from "@/lib/haptics";
 
 export function App() {
-  const { progress, ready, go } = useProgress();
+  const { progress, ready, go, reset } = useProgress();
+  const haptics = useHaptics();
 
   if (!ready) {
     return (
@@ -23,6 +25,16 @@ export function App() {
   return (
     <div className="shell">
       <div className="atmosphere" aria-hidden />
+      <button
+        type="button"
+        className="debug-reset"
+        onClick={() => {
+          haptics.tap();
+          reset();
+        }}
+      >
+        ← к началу
+      </button>
       <main className="stage">
         {progress.screen === "intro" && (
           <Intro onStart={() => go("howto-catch")} />
@@ -30,8 +42,8 @@ export function App() {
 
         {progress.screen === "howto-catch" && (
           <HowToPlay
-            title="Звёзды и цветы"
-            steps={["Тапай падающие ⭐ и 🌸", "20 секунд — набери 12"]}
+            title="Поймай духи"
+            steps={["Тапай падающих духов 👻✨", "20 секунд — набери 12"]}
             goal="12 попаданий"
             cta="Поехали"
             onContinue={() => go("catch")}
@@ -47,7 +59,7 @@ export function App() {
         {progress.screen === "howto-memory" && (
           <HowToPlay
             title="Вспомни легенду"
-            steps={["Открывай по 2 карты", "Найди все пары MJ"]}
+            steps={["Открывай по 2 карты", "Найди все пары"]}
             goal="6 пар"
             cta="Играть"
             onContinue={() => go("memory")}

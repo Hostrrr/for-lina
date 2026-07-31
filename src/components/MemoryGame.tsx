@@ -4,19 +4,22 @@ import { useState } from "react";
 import { ProgressBar } from "./ProgressBar";
 import { useHaptics } from "@/lib/haptics";
 
-const ICONS = [
-  { id: "glove", emoji: "🧤", label: "Перчатка" },
-  { id: "hat", emoji: "🎩", label: "Шляпа" },
-  { id: "shoe", emoji: "👟", label: "Лунная походка" },
-  { id: "mic", emoji: "🎤", label: "Микрофон" },
-  { id: "thriller", emoji: "🧟", label: "Thriller" },
-  { id: "star", emoji: "🌟", label: "Король попсы" },
-];
+/** Положи файлы в public/memory/ с этими именами (jpg/png/webp). */
+export const MEMORY_CARDS = [
+  { id: "1", src: "/memory/1.jpg", fallback: "🧤", label: "Карта 1" },
+  { id: "2", src: "/memory/2.jpg", fallback: "🎩", label: "Карта 2" },
+  { id: "3", src: "/memory/3.jpg", fallback: "👟", label: "Карта 3" },
+  { id: "4", src: "/memory/4.jpg", fallback: "🎤", label: "Карта 4" },
+  { id: "5", src: "/memory/5.jpg", fallback: "🧟", label: "Карта 5" },
+  { id: "6", src: "/memory/6.jpg", fallback: "🌟", label: "Карта 6" },
+] as const;
 
 type Card = {
   uid: string;
   pairId: string;
-  emoji: string;
+  src: string;
+  fallback: string;
+  label: string;
 };
 
 function shuffle<T>(arr: T[]): T[] {
@@ -29,11 +32,42 @@ function shuffle<T>(arr: T[]): T[] {
 }
 
 function buildDeck(): Card[] {
-  const pairs = ICONS.flatMap((icon) => [
-    { uid: `${icon.id}-a`, pairId: icon.id, emoji: icon.emoji },
-    { uid: `${icon.id}-b`, pairId: icon.id, emoji: icon.emoji },
+  const pairs = MEMORY_CARDS.flatMap((icon) => [
+    {
+      uid: `${icon.id}-a`,
+      pairId: icon.id,
+      src: icon.src,
+      fallback: icon.fallback,
+      label: icon.label,
+    },
+    {
+      uid: `${icon.id}-b`,
+      pairId: icon.id,
+      src: icon.src,
+      fallback: icon.fallback,
+      label: icon.label,
+    },
   ]);
   return shuffle(pairs);
+}
+
+function CardImage({ src, fallback, label }: { src: string; fallback: string; label: string }) {
+  const [broken, setBroken] = useState(false);
+
+  if (broken) {
+    return <span className="memory-emoji">{fallback}</span>;
+  }
+
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      alt={label}
+      className="memory-img"
+      draggable={false}
+      onError={() => setBroken(true)}
+    />
+  );
 }
 
 type Props = {
@@ -47,7 +81,7 @@ export function MemoryGame({ onWin }: Props) {
   const [matched, setMatched] = useState<string[]>([]);
   const [lock, setLock] = useState(false);
 
-  const done = matched.length === ICONS.length;
+  const done = matched.length === MEMORY_CARDS.length;
 
   const flip = (uid: string) => {
     if (
@@ -77,7 +111,7 @@ export function MemoryGame({ onWin }: Props) {
       setFlipped([]);
       setLock(false);
       haptics.success();
-      if (nextMatched.length === ICONS.length) {
+      if (nextMatched.length === MEMORY_CARDS.length) {
         setTimeout(onWin, 600);
       }
     } else {
@@ -104,7 +138,7 @@ export function MemoryGame({ onWin }: Props) {
         <div className="hud">
           <span className="game-name">Вспомни легенду</span>
           <span>
-            {matched.length}/{ICONS.length}
+            {matched.length}/{MEMORY_CARDS.length}
           </span>
         </div>
       </div>
@@ -118,10 +152,16 @@ export function MemoryGame({ onWin }: Props) {
               type="button"
               className={`memory-card ${isUp ? "up" : ""} ${matched.includes(card.pairId) ? "matched" : ""}`}
               onClick={() => flip(card.uid)}
-              aria-label={isUp ? card.emoji : "закрытая карта"}
+              aria-label={isUp ? card.label : "закрытая карта"}
             >
               <span className="memory-face front">✦</span>
-              <span className="memory-face back">{card.emoji}</span>
+              <span className="memory-face back">
+                <CardImage
+                  src={card.src}
+                  fallback={card.fallback}
+                  label={card.label}
+                />
+              </span>
             </button>
           );
         })}
