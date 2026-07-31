@@ -15,7 +15,7 @@ const sans = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "Для Лины",
+  title: "Игрульки",
   description: "Маленький квест с извинениями, играми и цветами",
   appleWebApp: {
     capable: true,
