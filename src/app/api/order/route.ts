@@ -8,7 +8,7 @@ type Body = {
 };
 
 export async function POST(request: Request) {
-  const key = process.env.WEB3FORMS_ACCESS_KEY;
+  const key = process.env.WEB3FORMS_ACCESS_KEY?.trim();
   if (!key) {
     return NextResponse.json(
       {
@@ -43,7 +43,17 @@ export async function POST(request: Request) {
     body.bouquetName ||
     FLOWER_OPTIONS.find((f) => f.id === bouquet)?.name ||
     bouquet;
-  const note = (body.note || "").slice(0, 1000);
+  const note = (body.note || "").trim().slice(0, 1000);
+
+  // Web3Forms требует валидный email в payload (иначе "String does not match")
+  const replyEmail =
+    process.env.ORDER_REPLY_EMAIL?.trim() || "noreply@example.com";
+
+  const message = [
+    `Заказ цветов от Лины`,
+    `Букет: ${bouquetName}`,
+    `Адрес / комментарий: ${note || "—"}`,
+  ].join("\n");
 
   const res = await fetch("https://api.web3forms.com/submit", {
     method: "POST",
@@ -53,21 +63,31 @@ export async function POST(request: Request) {
     },
     body: JSON.stringify({
       access_key: key,
-      subject: `Заказ цветов от Лины: ${bouquetName}`,
-      from_name: "for-lina",
-      bouquet: bouquetName,
-      bouquet_id: bouquet,
-      note: note || "(без комментария)",
-      message: `Лина заказала букет «${bouquetName}».\nКомментарий: ${note || "—"}`,
+      subject: `Заказ цветов: ${bouquetName}`,
+      name: "Лина",
+      email: replyEmail,
+      message,
     }),
   });
 
-  const data = (await res.json()) as { success?: boolean; message?: string };
+  const data = (await res.json()) as {
+    success?: boolean;
+    message?: string;
+    error?: string | { message?: string };
+  };
+
   if (!res.ok || !data.success) {
-    return NextResponse.json(
-      { ok: false, error: data.message || "Web3Forms отклонил заказ" },
-      { status: 502 },
-    );
+    const raw =
+      (typeof data.error === "string" && data.error) ||
+      (typeof data.error === "object" && data.error?.message) ||
+      data.message ||
+      "Не удалось отправить заказ";
+    // более понятно для пользователя
+    const friendly =
+      /match|pattern|email/i.test(raw)
+        ? "Не удалось отправить заказ. Попробуй ещё раз."
+        : raw;
+    return NextResponse.json({ ok: false, error: friendly }, { status: 502 });
   }
 
   return NextResponse.json({ ok: true });
