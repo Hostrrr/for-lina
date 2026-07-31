@@ -19,13 +19,12 @@ export function Reveal({ onContinue }: Props) {
 
   return (
     <section className="screen reveal fade-in">
-      <h2 className="screen-title">Сюрприз</h2>
       <div className="reveal-frame pop-in">
         {imgOk ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src="/finale.jpg"
-            alt="Сюрприз для Лины"
+            alt="Для Лины"
             className="reveal-img"
             onError={() => setImgOk(false)}
           />

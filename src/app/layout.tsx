@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   description: "Маленький квест с извинениями, играми и цветами",
   appleWebApp: {
     capable: true,
-    statusBarStyle: "black-translucent",
+    statusBarStyle: "default",
     title: "Для Лины",
   },
 };
@@ -30,7 +30,7 @@ export const viewport: Viewport = {
   maximumScale: 1,
   userScalable: false,
   viewportFit: "cover",
-  themeColor: "#0b0614",
+  themeColor: "#ffffff",
 };
 
 export default function RootLayout({
