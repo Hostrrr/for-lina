@@ -4,9 +4,19 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ProgressBar } from "./ProgressBar";
 import { useHaptics } from "@/lib/haptics";
 
+/** Фотки духов: public/perfumes/1.jpg … 6.jpg */
+export const PERFUME_SRCS = [
+  "/perfumes/1.jpg",
+  "/perfumes/2.jpg",
+  "/perfumes/3.jpg",
+  "/perfumes/4.jpg",
+  "/perfumes/5.jpg",
+  "/perfumes/6.jpg",
+] as const;
+
 type Item = {
   id: number;
-  kind: "ghost" | "spark";
+  src: string;
   x: number;
   y: number;
   speed: number;
@@ -14,7 +24,23 @@ type Item = {
 
 const DURATION = 20;
 const TARGET = 12;
-const EMOJIS = { ghost: "👻", spark: "✨" };
+
+function PerfumeThumb({ src }: { src: string }) {
+  const [broken, setBroken] = useState(false);
+  if (broken) {
+    return <span className="catch-fallback">🧴</span>;
+  }
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      alt=""
+      className="catch-img"
+      draggable={false}
+      onError={() => setBroken(true)}
+    />
+  );
+}
 
 type Props = {
   onWin: () => void;
@@ -31,20 +57,22 @@ export function CatchGame({ onWin }: Props) {
   const scoreRef = useRef(0);
   const catchingRef = useRef<Set<number>>(new Set());
 
-  const resetRound = useCallback((withHaptic: boolean) => {
-    setTimeLeft(DURATION);
-    setScore(0);
-    scoreRef.current = 0;
-    setItems([]);
-    setFailed(false);
-    catchingRef.current.clear();
-    setRunning(true);
-    if (withHaptic) haptics.tap();
-  }, [haptics]);
+  const resetRound = useCallback(
+    (withHaptic: boolean) => {
+      setTimeLeft(DURATION);
+      setScore(0);
+      scoreRef.current = 0;
+      setItems([]);
+      setFailed(false);
+      catchingRef.current.clear();
+      setRunning(true);
+      if (withHaptic) haptics.tap();
+    },
+    [haptics],
+  );
 
   useEffect(() => {
     resetRound(false);
-    // only on mount
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -65,20 +93,20 @@ export function CatchGame({ onWin }: Props) {
       });
     }, 1000);
     return () => window.clearInterval(timer);
-    // haptics.error is stable enough; avoid resetting the timer each render
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [running]);
 
   useEffect(() => {
     if (!running) return;
     const spawn = window.setInterval(() => {
-      const kind = Math.random() > 0.45 ? "ghost" : "spark";
       idRef.current += 1;
+      const src =
+        PERFUME_SRCS[Math.floor(Math.random() * PERFUME_SRCS.length)];
       setItems((prev) => [
         ...prev.slice(-12),
         {
           id: idRef.current,
-          kind,
+          src,
           x: 12 + Math.random() * 76,
           y: -12,
           speed: 0.5 + Math.random() * 0.65,
@@ -134,15 +162,15 @@ export function CatchGame({ onWin }: Props) {
           <button
             key={it.id}
             type="button"
-            className={`catch-item ${it.kind}`}
+            className="catch-item perfume"
             style={{ left: `${it.x}%`, top: `${it.y}%` }}
             onPointerDown={(e) => {
               e.preventDefault();
               catchItem(it.id);
             }}
-            aria-label={it.kind === "ghost" ? "дух" : "искорка"}
+            aria-label="духи"
           >
-            {EMOJIS[it.kind]}
+            <PerfumeThumb src={it.src} />
           </button>
         ))}
         {!running && failed ? (

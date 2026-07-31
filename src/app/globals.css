@@ -290,21 +290,32 @@ textarea {
   place-items: center;
   border: none;
   border-radius: 999px;
-  background: rgba(168, 85, 247, 0.12);
-  box-shadow: inset 0 0 0 1px rgba(221, 214, 254, 0.2);
+  padding: 0;
+  overflow: hidden;
+  background: rgba(168, 85, 247, 0.18);
+  box-shadow:
+    inset 0 0 0 2px rgba(221, 214, 254, 0.35),
+    0 8px 18px rgba(0, 0, 0, 0.35);
   font-size: 2.1rem;
   line-height: 1;
   cursor: pointer;
-  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.35));
   animation: wobble 1.4s ease-in-out infinite;
   touch-action: manipulation;
   -webkit-user-select: none;
   user-select: none;
 }
 
-.catch-item.flower,
-.catch-item.spark {
-  font-size: 2.25rem;
+.catch-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+
+.catch-fallback {
+  font-size: 2.1rem;
+  line-height: 1;
 }
 
 @keyframes wobble {
@@ -737,13 +748,8 @@ textarea {
     border-radius: 18px;
   }
 
-  .catch-item {
+  .catch-fallback {
     font-size: 2.2rem;
-  }
-
-  .catch-item.flower,
-  .catch-item.spark {
-    font-size: 2.35rem;
   }
 
   .memory-grid {

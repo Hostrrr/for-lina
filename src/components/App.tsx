@@ -43,7 +43,7 @@ export function App() {
         {progress.screen === "howto-catch" && (
           <HowToPlay
             title="Поймай духи"
-            steps={["Тапай падающих духов 👻✨", "20 секунд — набери 12"]}
+            steps={["Тапай падающие флаконы духов", "20 секунд — набери 12"]}
             goal="12 попаданий"
             cta="Поехали"
             onContinue={() => go("catch")}
