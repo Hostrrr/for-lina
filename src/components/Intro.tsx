@@ -1,0 +1,21 @@
+"use client";
+
+type Props = {
+  onStart: () => void;
+};
+
+export function Intro({ onStart }: Props) {
+  return (
+    <section className="screen intro fade-in">
+      <p className="brand">Для Лины</p>
+      <h1 className="hero-title">Лина</h1>
+      <p className="lede intro-lede">
+        Я накосячил. Поэтому собрал маленький квест: три испытания, потом
+        сюрприз — и ты сможешь заказать себе цветы. Прямо с этого сайта.
+      </p>
+      <button type="button" className="btn primary" onClick={onStart}>
+        Начать
+      </button>
+    </section>
+  );
+}
