@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { ProgressBar } from "./ProgressBar";
 import { useHaptics } from "@/lib/haptics";
 
@@ -48,11 +48,6 @@ export function MemoryGame({ onWin }: Props) {
   const [lock, setLock] = useState(false);
 
   const done = matched.length === ICONS.length;
-
-  const status = useMemo(() => {
-    if (done) return "Все пары найдены!";
-    return `Найдено пар: ${matched.length}/${ICONS.length}`;
-  }, [done, matched.length]);
 
   const flip = (uid: string) => {
     if (
@@ -104,9 +99,15 @@ export function MemoryGame({ onWin }: Props) {
 
   return (
     <section className="screen game fade-in">
-      <ProgressBar step={2} />
-      <h2 className="screen-title">Вспомни легенду</h2>
-      <p className="hud">{status}</p>
+      <div className="game-top">
+        <ProgressBar step={2} />
+        <div className="hud">
+          <span className="game-name">Вспомни легенду</span>
+          <span>
+            {matched.length}/{ICONS.length}
+          </span>
+        </div>
+      </div>
       <div className="memory-grid">
         {deck.map((card) => {
           const isUp =
@@ -126,8 +127,8 @@ export function MemoryGame({ onWin }: Props) {
         })}
       </div>
       {!done ? (
-        <button type="button" className="btn ghost" onClick={restart}>
-          Перемешать заново
+        <button type="button" className="btn ghost compact" onClick={restart}>
+          Перемешать
         </button>
       ) : null}
     </section>

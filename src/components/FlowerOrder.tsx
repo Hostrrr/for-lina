@@ -49,20 +49,15 @@ export function FlowerOrder() {
   if (status === "ok") {
     return (
       <section className="screen order fade-in">
-        <p className="eyebrow">Готово</p>
-        <h2 className="screen-title">Заказ улетел</h2>
-        <p className="lede">
-          Я уже получил уведомление. Скоро будут цветы. Спасибо, Лина.
-        </p>
+        <h2 className="screen-title">Заказ улетел ✨</h2>
+        <p className="lede">Скоро будут цветы.</p>
       </section>
     );
   }
 
   return (
     <section className="screen order fade-in">
-      <p className="eyebrow">Финал</p>
-      <h2 className="screen-title">Меню цветов</h2>
-      <p className="lede">Выбери букет — заказ придёт мне.</p>
+      <h2 className="screen-title">Цветы</h2>
       <form className="order-form" onSubmit={submit}>
         <div className="bouquet-menu" role="listbox" aria-label="Букеты">
           {FLOWER_OPTIONS.map((f) => (
@@ -80,18 +75,18 @@ export function FlowerOrder() {
               <span className="bouquet-option-emoji">{f.emoji}</span>
               <span className="bouquet-option-text">
                 <strong>{f.name}</strong>
-                <span>{f.blurb}</span>
+                <span className="bouquet-blurb">{f.blurb}</span>
               </span>
             </button>
           ))}
         </div>
         <label className="field">
-          <span>Комментарий (необязательно)</span>
+          <span>Комментарий</span>
           <textarea
             value={note}
             onChange={(e) => setNote(e.target.value)}
-            rows={3}
-            placeholder="Адрес, пожелания, тайминг…"
+            rows={2}
+            placeholder="Адрес, пожелания…"
           />
         </label>
         {error ? <p className="error">{error}</p> : null}
@@ -100,7 +95,7 @@ export function FlowerOrder() {
           className="btn primary"
           disabled={status === "loading"}
         >
-          {status === "loading" ? "Отправляю…" : "Заказать"}
+          {status === "loading" ? "…" : "Заказать"}
         </button>
       </form>
     </section>

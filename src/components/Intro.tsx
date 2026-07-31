@@ -14,8 +14,7 @@ export function Intro({ onStart }: Props) {
       <p className="brand">Для Лины</p>
       <h1 className="hero-title">Лина</h1>
       <p className="lede intro-lede">
-        Я накосячил. Поэтому собрал маленький квест: три испытания, потом
-        сюрприз — и ты сможешь заказать себе цветы. Прямо с этого сайта.
+        Прости. 3 игры → сюрприз → цветы.
       </p>
       <button
         type="button"

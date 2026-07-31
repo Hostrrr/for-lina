@@ -21,7 +21,7 @@ export function BouquetGame({ onWin }: Props) {
   const [round, setRound] = useState(0);
   const [recipe, setRecipe] = useState(() => pickRecipe(3));
   const [picked, setPicked] = useState<string[]>([]);
-  const [message, setMessage] = useState("Собери букет по рецепту");
+  const [message, setMessage] = useState("По рецепту");
   const [shake, setShake] = useState(false);
 
   const grid = useMemo(() => {
@@ -35,7 +35,7 @@ export function BouquetGame({ onWin }: Props) {
     const len = 3 + Math.min(index, 2);
     setRecipe(pickRecipe(len));
     setPicked([]);
-    setMessage("Собери букет по рецепту");
+    setMessage("По рецепту");
     setRound(index);
   };
 
@@ -44,11 +44,11 @@ export function BouquetGame({ onWin }: Props) {
     if (flower !== recipe[nextIndex]) {
       haptics.error();
       setShake(true);
-      setMessage("Не тот цветок — начнём этот раунд сначала");
+      setMessage("Мимо — сначала");
       setTimeout(() => {
         setShake(false);
         setPicked([]);
-        setMessage("Собери букет по рецепту");
+        setMessage("По рецепту");
       }, 500);
       return;
     }
@@ -59,11 +59,11 @@ export function BouquetGame({ onWin }: Props) {
 
     if (next.length === recipe.length) {
       if (round + 1 >= ROUNDS) {
-        setMessage("Букет готов!");
+        setMessage("Готово!");
         haptics.success();
         setTimeout(onWin, 550);
       } else {
-        setMessage("Красиво! Следующий раунд…");
+        setMessage("Дальше…");
         haptics.success();
         setTimeout(() => startRound(round + 1), 650);
       }
@@ -72,13 +72,16 @@ export function BouquetGame({ onWin }: Props) {
 
   return (
     <section className="screen game fade-in">
-      <ProgressBar step={3} />
-      <h2 className="screen-title">Собери букет</h2>
-      <p className="hud">
-        Раунд {round + 1}/{ROUNDS}
-      </p>
+      <div className="game-top">
+        <ProgressBar step={3} />
+        <div className="hud">
+          <span className="game-name">Собери букет</span>
+          <span>
+            {round + 1}/{ROUNDS}
+          </span>
+        </div>
+      </div>
       <div className={`recipe ${shake ? "shake" : ""}`}>
-        <p className="recipe-label">Рецепт</p>
         <div className="recipe-row">
           {recipe.map((f, i) => (
             <span
@@ -89,7 +92,7 @@ export function BouquetGame({ onWin }: Props) {
             </span>
           ))}
         </div>
-        <p className="muted">{message}</p>
+        <p className="muted recipe-msg">{message}</p>
       </div>
       <div className="bouquet-grid">
         {grid.map((flower, i) => (

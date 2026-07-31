@@ -19,8 +19,7 @@ export function Reveal({ onContinue }: Props) {
 
   return (
     <section className="screen reveal fade-in">
-      <p className="eyebrow">Сюрприз</p>
-      <h2 className="screen-title">Ты это заслужила</h2>
+      <h2 className="screen-title">Сюрприз</h2>
       <div className="reveal-frame pop-in">
         {imgOk ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -34,14 +33,11 @@ export function Reveal({ onContinue }: Props) {
           <div className="reveal-placeholder">
             <p className="reveal-placeholder-emoji">📸</p>
             <p>
-              Сюда вставь свою картинку:
-              <br />
-              <code>public/finale.jpg</code>
+              Картинка: <code>public/finale.jpg</code>
             </p>
           </div>
         )}
       </div>
-      <p className="lede">А теперь — цветы. Выбирай.</p>
       <button
         type="button"
         className="btn primary"
@@ -50,7 +46,7 @@ export function Reveal({ onContinue }: Props) {
           onContinue();
         }}
       >
-        К меню цветов
+        К цветам
       </button>
     </section>
   );

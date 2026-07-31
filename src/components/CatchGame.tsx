@@ -119,13 +119,15 @@ export function CatchGame({ onWin }: Props) {
 
   return (
     <section className="screen game fade-in">
-      <ProgressBar step={1} />
-      <h2 className="screen-title">Звёзды и цветы</h2>
-      <div className="hud">
-        <span>⏱ {timeLeft}с</span>
-        <span>
-          ✦ {score}/{TARGET}
-        </span>
+      <div className="game-top">
+        <ProgressBar step={1} />
+        <div className="hud">
+          <span className="game-name">Звёзды и цветы</span>
+          <span>⏱ {timeLeft}с</span>
+          <span>
+            ✦ {score}/{TARGET}
+          </span>
+        </div>
       </div>
       <div className="catch-area">
         {items.map((it) => (
@@ -145,13 +147,13 @@ export function CatchGame({ onWin }: Props) {
         ))}
         {!running && failed ? (
           <div className="overlay-card">
-            <p>Чуть-чуть не хватило. Ещё разок?</p>
+            <p>Ещё разок?</p>
             <button
               type="button"
               className="btn primary"
               onClick={() => resetRound(true)}
             >
-              Попробовать снова
+              Снова
             </button>
           </div>
         ) : null}
