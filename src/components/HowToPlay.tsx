@@ -1,5 +1,7 @@
 "use client";
 
+import { useHaptics } from "@/lib/haptics";
+
 type Props = {
   title: string;
   subtitle?: string;
@@ -19,6 +21,8 @@ export function HowToPlay({
   onContinue,
   detailed,
 }: Props) {
+  const haptics = useHaptics();
+
   return (
     <section className="screen howto fade-in">
       <p className="eyebrow">{detailed ? "Сначала разберёмся" : "Как играть"}</p>
@@ -32,7 +36,14 @@ export function HowToPlay({
       <p className="goal">
         <strong>Цель:</strong> {goal}
       </p>
-      <button type="button" className="btn primary" onClick={onContinue}>
+      <button
+        type="button"
+        className="btn primary"
+        onClick={() => {
+          haptics.tap();
+          onContinue();
+        }}
+      >
         {cta}
       </button>
     </section>

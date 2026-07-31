@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { ProgressBar } from "./ProgressBar";
+import { useHaptics } from "@/lib/haptics";
 
 const ICONS = [
   { id: "glove", emoji: "🧤", label: "Перчатка" },
@@ -40,6 +41,7 @@ type Props = {
 };
 
 export function MemoryGame({ onWin }: Props) {
+  const haptics = useHaptics();
   const [deck, setDeck] = useState<Card[]>(() => buildDeck());
   const [flipped, setFlipped] = useState<string[]>([]);
   const [matched, setMatched] = useState<string[]>([]);
@@ -53,12 +55,17 @@ export function MemoryGame({ onWin }: Props) {
   }, [done, matched.length]);
 
   const flip = (uid: string) => {
-    if (lock || flipped.includes(uid) || matched.some((m) => deck.find((c) => c.uid === uid)?.pairId === m)) {
+    if (
+      lock ||
+      flipped.includes(uid) ||
+      matched.some((m) => deck.find((c) => c.uid === uid)?.pairId === m)
+    ) {
       return;
     }
     const card = deck.find((c) => c.uid === uid);
     if (!card || matched.includes(card.pairId)) return;
 
+    haptics.tap();
     const next = [...flipped, uid];
     setFlipped(next);
 
@@ -74,10 +81,12 @@ export function MemoryGame({ onWin }: Props) {
       setMatched(nextMatched);
       setFlipped([]);
       setLock(false);
+      haptics.success();
       if (nextMatched.length === ICONS.length) {
         setTimeout(onWin, 600);
       }
     } else {
+      haptics.error();
       setTimeout(() => {
         setFlipped([]);
         setLock(false);
@@ -86,6 +95,7 @@ export function MemoryGame({ onWin }: Props) {
   };
 
   const restart = () => {
+    haptics.tap();
     setDeck(buildDeck());
     setFlipped([]);
     setMatched([]);

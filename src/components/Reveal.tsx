@@ -1,13 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useHaptics } from "@/lib/haptics";
 
 type Props = {
   onContinue: () => void;
 };
 
 export function Reveal({ onContinue }: Props) {
+  const haptics = useHaptics();
   const [imgOk, setImgOk] = useState(true);
+
+  useEffect(() => {
+    haptics.buzz();
+    // once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <section className="screen reveal fade-in">
@@ -34,7 +42,14 @@ export function Reveal({ onContinue }: Props) {
         )}
       </div>
       <p className="lede">А теперь — цветы. Выбирай.</p>
-      <button type="button" className="btn primary" onClick={onContinue}>
+      <button
+        type="button"
+        className="btn primary"
+        onClick={() => {
+          haptics.tap();
+          onContinue();
+        }}
+      >
         К меню цветов
       </button>
     </section>

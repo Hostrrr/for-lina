@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Manrope } from "next/font/google";
 import "./globals.css";
 
@@ -17,6 +17,20 @@ const sans = Manrope({
 export const metadata: Metadata = {
   title: "Для Лины",
   description: "Маленький квест с извинениями, играми и цветами",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Для Лины",
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
+  themeColor: "#0b0614",
 };
 
 export default function RootLayout({

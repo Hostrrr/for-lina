@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ProgressBar } from "./ProgressBar";
+import { useHaptics } from "@/lib/haptics";
 
 type Item = {
   id: number;
@@ -20,6 +21,7 @@ type Props = {
 };
 
 export function CatchGame({ onWin }: Props) {
+  const haptics = useHaptics();
   const [timeLeft, setTimeLeft] = useState(DURATION);
   const [score, setScore] = useState(0);
   const [items, setItems] = useState<Item[]>([]);
@@ -27,19 +29,24 @@ export function CatchGame({ onWin }: Props) {
   const [failed, setFailed] = useState(false);
   const idRef = useRef(0);
   const scoreRef = useRef(0);
+  const catchingRef = useRef<Set<number>>(new Set());
 
-  const start = useCallback(() => {
+  const resetRound = useCallback((withHaptic: boolean) => {
     setTimeLeft(DURATION);
     setScore(0);
     scoreRef.current = 0;
     setItems([]);
     setFailed(false);
+    catchingRef.current.clear();
     setRunning(true);
-  }, []);
+    if (withHaptic) haptics.tap();
+  }, [haptics]);
 
   useEffect(() => {
-    start();
-  }, [start]);
+    resetRound(false);
+    // only on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (!running) return;
@@ -48,13 +55,18 @@ export function CatchGame({ onWin }: Props) {
         if (t <= 1) {
           window.clearInterval(timer);
           setRunning(false);
-          if (scoreRef.current < TARGET) setFailed(true);
+          if (scoreRef.current < TARGET) {
+            setFailed(true);
+            void haptics.error();
+          }
           return 0;
         }
         return t - 1;
       });
     }, 1000);
     return () => window.clearInterval(timer);
+    // haptics.error is stable enough; avoid resetting the timer each render
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [running]);
 
   useEffect(() => {
@@ -63,13 +75,13 @@ export function CatchGame({ onWin }: Props) {
       const kind = Math.random() > 0.45 ? "flower" : "star";
       idRef.current += 1;
       setItems((prev) => [
-        ...prev.slice(-14),
+        ...prev.slice(-12),
         {
           id: idRef.current,
           kind,
-          x: 8 + Math.random() * 84,
-          y: -10,
-          speed: 0.55 + Math.random() * 0.7,
+          x: 12 + Math.random() * 76,
+          y: -12,
+          speed: 0.5 + Math.random() * 0.65,
         },
       ]);
     }, 420);
@@ -82,20 +94,23 @@ export function CatchGame({ onWin }: Props) {
       setItems((prev) =>
         prev
           .map((it) => ({ ...it, y: it.y + it.speed * 1.8 }))
-          .filter((it) => it.y < 110),
+          .filter((it) => it.y < 112),
       );
     }, 32);
     return () => window.clearInterval(move);
   }, [running]);
 
   const catchItem = (id: number) => {
-    if (!running) return;
+    if (!running || catchingRef.current.has(id)) return;
+    catchingRef.current.add(id);
+    haptics.tap();
     setItems((prev) => prev.filter((it) => it.id !== id));
     setScore((s) => {
       const next = s + 1;
       scoreRef.current = next;
       if (next >= TARGET) {
         setRunning(false);
+        haptics.success();
         setTimeout(onWin, 450);
       }
       return next;
@@ -119,7 +134,10 @@ export function CatchGame({ onWin }: Props) {
             type="button"
             className={`catch-item ${it.kind}`}
             style={{ left: `${it.x}%`, top: `${it.y}%` }}
-            onClick={() => catchItem(it.id)}
+            onPointerDown={(e) => {
+              e.preventDefault();
+              catchItem(it.id);
+            }}
             aria-label={it.kind === "star" ? "звезда" : "цветок"}
           >
             {EMOJIS[it.kind]}
@@ -128,7 +146,11 @@ export function CatchGame({ onWin }: Props) {
         {!running && failed ? (
           <div className="overlay-card">
             <p>Чуть-чуть не хватило. Ещё разок?</p>
-            <button type="button" className="btn primary" onClick={start}>
+            <button
+              type="button"
+              className="btn primary"
+              onClick={() => resetRound(true)}
+            >
               Попробовать снова
             </button>
           </div>

@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { ProgressBar } from "./ProgressBar";
+import { useHaptics } from "@/lib/haptics";
 
 const POOL = ["🌷", "🌹", "🌼", "🌻", "💐", "🪻", "🪷", "🌸"];
 const ROUNDS = 3;
@@ -16,6 +17,7 @@ type Props = {
 };
 
 export function BouquetGame({ onWin }: Props) {
+  const haptics = useHaptics();
   const [round, setRound] = useState(0);
   const [recipe, setRecipe] = useState(() => pickRecipe(3));
   const [picked, setPicked] = useState<string[]>([]);
@@ -40,6 +42,7 @@ export function BouquetGame({ onWin }: Props) {
   const choose = (flower: string) => {
     const nextIndex = picked.length;
     if (flower !== recipe[nextIndex]) {
+      haptics.error();
       setShake(true);
       setMessage("Не тот цветок — начнём этот раунд сначала");
       setTimeout(() => {
@@ -50,15 +53,18 @@ export function BouquetGame({ onWin }: Props) {
       return;
     }
 
+    haptics.tap();
     const next = [...picked, flower];
     setPicked(next);
 
     if (next.length === recipe.length) {
       if (round + 1 >= ROUNDS) {
         setMessage("Букет готов!");
+        haptics.success();
         setTimeout(onWin, 550);
       } else {
         setMessage("Красиво! Следующий раунд…");
+        haptics.success();
         setTimeout(() => startRound(round + 1), 650);
       }
     }

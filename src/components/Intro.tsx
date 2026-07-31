@@ -1,10 +1,14 @@
 "use client";
 
+import { useHaptics } from "@/lib/haptics";
+
 type Props = {
   onStart: () => void;
 };
 
 export function Intro({ onStart }: Props) {
+  const haptics = useHaptics();
+
   return (
     <section className="screen intro fade-in">
       <p className="brand">Для Лины</p>
@@ -13,7 +17,14 @@ export function Intro({ onStart }: Props) {
         Я накосячил. Поэтому собрал маленький квест: три испытания, потом
         сюрприз — и ты сможешь заказать себе цветы. Прямо с этого сайта.
       </p>
-      <button type="button" className="btn primary" onClick={onStart}>
+      <button
+        type="button"
+        className="btn primary"
+        onClick={() => {
+          haptics.tap();
+          onStart();
+        }}
+      >
         Начать
       </button>
     </section>

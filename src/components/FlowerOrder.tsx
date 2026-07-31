@@ -2,8 +2,10 @@
 
 import { FormEvent, useState } from "react";
 import { FLOWER_OPTIONS, type FlowerId } from "@/lib/flowers";
+import { useHaptics } from "@/lib/haptics";
 
 export function FlowerOrder() {
+  const haptics = useHaptics();
   const [selected, setSelected] = useState<FlowerId | null>(null);
   const [note, setNote] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "ok" | "error">(
@@ -14,6 +16,7 @@ export function FlowerOrder() {
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     if (!selected) {
+      haptics.error();
       setError("Выбери букет");
       return;
     }
@@ -34,8 +37,10 @@ export function FlowerOrder() {
       if (!res.ok || !data.ok) {
         throw new Error(data.error || "Не удалось отправить заказ");
       }
+      haptics.success();
       setStatus("ok");
     } catch (err) {
+      haptics.error();
       setStatus("error");
       setError(err instanceof Error ? err.message : "Ошибка отправки");
     }
@@ -67,7 +72,10 @@ export function FlowerOrder() {
               role="option"
               aria-selected={selected === f.id}
               className={`bouquet-option ${selected === f.id ? "selected" : ""}`}
-              onClick={() => setSelected(f.id)}
+              onClick={() => {
+                haptics.tap();
+                setSelected(f.id);
+              }}
             >
               <span className="bouquet-option-emoji">{f.emoji}</span>
               <span className="bouquet-option-text">
