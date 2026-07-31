@@ -136,7 +136,7 @@ export function MemoryGame({ onWin }: Props) {
       <div className="game-top">
         <ProgressBar step={2} />
         <div className="hud">
-          <span className="game-name">Вспомни легенду</span>
+          <span className="game-name">Карточки</span>
           <span>
             {matched.length}/{MEMORY_CARDS.length}
           </span>

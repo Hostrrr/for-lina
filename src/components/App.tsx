@@ -58,7 +58,7 @@ export function App() {
 
         {progress.screen === "howto-memory" && (
           <HowToPlay
-            title="Вспомни легенду"
+            title="Карточки"
             steps={["Открывай по 2 карты", "Найди все пары"]}
             goal="6 пар"
             cta="Играть"
