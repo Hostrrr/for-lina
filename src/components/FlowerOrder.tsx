@@ -4,6 +4,10 @@ import { FormEvent, useState } from "react";
 import { FLOWER_OPTIONS, type FlowerId } from "@/lib/flowers";
 import { useHaptics } from "@/lib/haptics";
 
+/** Сюда приходят заказы */
+const ORDER_EMAIL =
+  process.env.NEXT_PUBLIC_ORDER_EMAIL?.trim() || "hosta20259@gmail.com";
+
 export function FlowerOrder() {
   const haptics = useHaptics();
   const [selected, setSelected] = useState<FlowerId | null>(null);
@@ -26,58 +30,53 @@ export function FlowerOrder() {
       return;
     }
 
-    const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY?.trim();
-    if (!accessKey) {
-      haptics.error();
-      setError("Заказы не настроены: нет NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY");
-      setStatus("error");
-      return;
-    }
-
     const bouquetName =
       FLOWER_OPTIONS.find((f) => f.id === selected)?.name ?? selected;
+    const addr = address.trim();
 
     setStatus("loading");
     setError("");
 
     try {
-      // Web3Forms free: только с клиента (с сервера Vercel часто блокирует)
-      const res = await fetch("https://api.web3forms.com/submit", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
+      // FormSubmit шлёт письмо на почту (первый раз — письмо с активацией)
+      const res = await fetch(
+        `https://formsubmit.co/ajax/${encodeURIComponent(ORDER_EMAIL)}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            name: "Лина",
+            _subject: `Заказ цветов: ${bouquetName}`,
+            _template: "table",
+            _captcha: "false",
+            Букет: bouquetName,
+            Адрес: addr,
+            message: `Букет: ${bouquetName}\nАдрес доставки: ${addr}`,
+          }),
         },
-        body: JSON.stringify({
-          access_key: accessKey,
-          subject: `Заказ цветов: ${bouquetName} — ${address.trim()}`,
-          from_name: "Лина",
-          name: "Лина",
-          email: "hosta20259@gmail.com",
-          // отдельные поля — так адрес виден колонкой в дашборде
-          bouquet: bouquetName,
-          address: address.trim(),
-          // адрес первой строкой: в таблице Message часто видно только начало
-          message: `Адрес: ${address.trim()}\nБукет: ${bouquetName}`,
-        }),
-      });
+      );
 
       const raw = await res.text();
-      let data: { success?: boolean; message?: string } = {};
+      let data: { success?: string | boolean; message?: string } = {};
       try {
-        data = JSON.parse(raw) as { success?: boolean; message?: string };
+        data = JSON.parse(raw) as typeof data;
       } catch {
         throw new Error("Сервис писем ответил странно. Попробуй ещё раз.");
       }
 
-      if (!res.ok || !data.success) {
-        const msg = data.message || "Не удалось отправить заказ";
-        if (/access[_ ]?key|pattern|match/i.test(msg)) {
-          throw new Error(
-            "Неверный ключ Web3Forms. Нужен UUID с web3forms.com (не [SENSITIVE]).",
-          );
-        }
-        throw new Error(msg);
+      const ok =
+        data.success === true ||
+        data.success === "true" ||
+        /success|отправ|sent|thank/i.test(JSON.stringify(data));
+
+      if (!res.ok || !ok) {
+        throw new Error(
+          data.message ||
+            "Не удалось отправить. Если это первый раз — подтверди почту в письме от FormSubmit.",
+        );
       }
 
       haptics.success();
@@ -93,7 +92,11 @@ export function FlowerOrder() {
     return (
       <section className="screen order fade-in">
         <h2 className="screen-title">Заказ улетел ✨</h2>
-        <p className="lede">Скоро будут цветы.</p>
+        <p className="lede">
+          Если это первый заказ — загляни в Gmail (и Спам): там может быть
+          письмо FormSubmit «Activate Form», его нужно подтвердить. Потом
+          заказы будут приходить нормально.
+        </p>
       </section>
     );
   }
@@ -131,6 +134,7 @@ export function FlowerOrder() {
             rows={3}
             placeholder="Улица, дом, квартира, подъезд…"
             autoComplete="street-address"
+            required
           />
         </label>
         {error ? <p className="error">{error}</p> : null}
